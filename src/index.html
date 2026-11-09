@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' http://127.0.0.1:* http://localhost:* https://api.anthropic.com https://api.openai.com; img-src 'self' data: blob:;" />
+<title>Omnex</title>
+<link rel="stylesheet" href="styles.css" />
+<script type="importmap">
+{
+  "imports": {
+    "three": "../node_modules/three/build/three.module.js",
+    "three/addons/": "../node_modules/three/examples/jsm/",
+    "@pixiv/three-vrm": "../node_modules/@pixiv/three-vrm/lib/three-vrm.module.js"
+  }
+}
+</script>
+</head>
+<body>
+
+  <div id="app">
+
+    <!-- Top status bar -->
+    <header id="topbar">
+      <div class="brand">
+        <span class="brand-mark">OMNEX</span>
+        <span class="brand-sub">local presence</span>
+      </div>
+      <div id="status-readout">
+        <span class="dot" id="status-dot"></span>
+        <span id="status-text">INITIALIZING</span>
+      </div>
+      <div id="brain-switch" title="Where Omnex thinks">
+        <button class="brain-btn" data-brain="auto">Auto</button>
+        <button class="brain-btn" data-brain="local">Local</button>
+        <button class="brain-btn" data-brain="cloud">Cloud</button>
+      </div>
+      <button id="settings-btn" title="Settings">⚙</button>
+    </header>
+
+    <!-- Avatar viewport -->
+    <main id="stage">
+      <canvas id="avatar-canvas"></canvas>
+      <svg id="reticle" viewBox="0 0 200 200">
+        <circle class="ring ring-outer" cx="100" cy="100" r="92" />
+        <circle class="ring ring-mid" cx="100" cy="100" r="80" />
+        <circle class="ring ring-level" id="ring-level" cx="100" cy="100" r="68" />
+      </svg>
+      <div id="no-model-hint">
+        Drop a <code>.vrm</code> file into <code>assets/models/</code> and name it
+        <code>omnex.vrm</code>, then restart — see README for where to get one.
+      </div>
+    </main>
+
+    <!-- Mode toggle -->
+    <div id="mode-toggle">
+      <button class="mode-btn active" data-mode="text">Text</button>
+      <button class="mode-btn" data-mode="voice">Voice</button>
+    </div>
+
+    <!-- Chat / transcript panel -->
+    <section id="panel">
+      <div id="transcript"></div>
+
+      <form id="text-form" class="input-row">
+        <input id="text-input" type="text" placeholder="Say something to Omnex…" autocomplete="off" />
+        <button type="submit">Send</button>
+      </form>
+
+      <div id="voice-row" class="input-row hidden">
+        <button id="mic-btn" type="button">
+          <span id="mic-icon">●</span>
+          <span id="mic-label">Hold to talk</span>
+        </button>
+        <select id="voice-engine">
+          <option value="browser">Browser voice (built-in)</option>
+          <option value="offline">Offline voice (Whisper)</option>
+        </select>
+      </div>
+    </section>
+  </div>
+
+  <!-- Settings modal -->
+  <dialog id="settings-modal">
+    <form method="dialog" id="settings-form">
+      <h2>Settings</h2>
+
+      <fieldset>
+        <legend>Brain</legend>
+        <label class="stack">Run Omnex on
+          <select id="s-brain-mode">
+            <option value="auto">Auto — local first, cloud if unavailable</option>
+            <option value="local">Local only (Ollama)</option>
+            <option value="cloud">Cloud only (your API key)</option>
+          </select>
+        </label>
+        <p class="hint">Low-end PC? Choose Cloud: nothing to download or run locally. In Cloud and Auto-fallback, your messages are sent to the provider you pick.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Local model (Ollama)</legend>
+        <label>Ollama URL <input id="s-ollama-url" type="text" /></label>
+        <label>Model name <input id="s-ollama-model" type="text" placeholder="llama3.1" /></label>
+        <div class="test-row">
+          <button type="button" id="test-local">Test local</button>
+          <span class="test-result" id="test-local-result"></span>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Cloud (bring your own key)</legend>
+        <label>Provider <select id="s-cloud-provider"></select></label>
+        <label id="s-base-row" class="hidden">Base URL <input id="s-cloud-base" type="text" placeholder="https://host/v1" /></label>
+        <label>API key <input id="s-cloud-key" type="password" autocomplete="off" /></label>
+        <label>Model <input id="s-cloud-model" type="text" /></label>
+        <div class="test-row">
+          <button type="button" id="test-cloud">Test key</button>
+          <button type="button" id="s-remove-key" class="hidden">Remove key</button>
+          <span class="test-result" id="test-cloud-result"></span>
+        </div>
+        <p class="hint" id="key-storage-hint"></p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Offline voice (Whisper)</legend>
+        <label>whisper.cpp server URL <input id="s-whisper-url" type="text" placeholder="http://127.0.0.1:8080" /></label>
+        <p class="hint">See README for setting up a local whisper.cpp server.</p>
+      </fieldset>
+
+      <div class="modal-actions">
+        <button type="button" id="settings-cancel">Close</button>
+        <button type="submit" id="settings-save">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="renderer.js"></script>
+</body>
+</html>

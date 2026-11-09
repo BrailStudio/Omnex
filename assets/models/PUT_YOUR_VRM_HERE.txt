@@ -1,0 +1,13 @@
+Put your avatar file here as: omnex.vrm
+
+Where to get a free VRM anime avatar:
+1. VRoid Studio (https://vroid.com/en/studio) — free desktop app, build/customize
+   a character and export as .vrm directly.
+2. VRoid Hub (https://hub.vroid.com) — browse and download VRM models made by
+   others (check each model's usage license).
+3. Ready Player Me (https://readyplayer.me) — generates a .glb avatar; convert
+   to .vrm with the VRM Add-on for Blender if you want the VRM-specific
+   expression blendshapes (used for lip sync in this app).
+
+Rename the exported file to omnex.vrm and drop it in this folder, then
+restart the app.

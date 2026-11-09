@@ -1,0 +1,52 @@
+{
+  "name": "omnex",
+  "version": "0.1.0",
+  "description": "Omnex \u2014 a local-first AI assistant with a 3D VRM avatar, voice + text modes, local LLM (Ollama) with cloud fallback.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win"
+  },
+  "author": "AminYT",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0",
+    "three": "^0.166.0",
+    "@pixiv/three-vrm": "^3.1.6"
+  },
+  "build": {
+    "appId": "com.aminyt.omnex",
+    "productName": "Omnex",
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "msi"
+      ],
+      "artifactName": "Omnex-${version}-Setup.${ext}"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "directories": {
+      "output": "dist"
+    }
+  }
+}
